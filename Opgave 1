@@ -1,0 +1,43 @@
+####### Ola 1. #######
+library(dplyr)
+
+#### opgave 1.1 ####
+
+boligsiden <- read.csv("Documents/Rstudio Filer/Dal_opgaver/Ola_1/boligsiden.csv")
+View(boligsiden)
+
+#### opgave 1.2 ####
+## Find de to ejendomme
+which(boligsiden$postnr == 8230 & boligsiden$vej == "tousvej" & 
+        boligsiden$vejnr == 106)
+
+boligsiden[71,]
+
+which(boligsiden$postnr == 7100 & boligsiden$vej == "egevej" & 
+        boligsiden$vejnr == 20)
+
+boligsiden[2202,]
+
+#### opgave 1.3 ####
+## Udvælg to tilfældige huse
+sample(1:nrow(boligsiden), 1)
+
+boligsiden[2433,]
+
+##Data uden NA-værdier
+boligsiden_clean <- na.omit(boligsiden)
+View(boligsiden_clean)
+
+## Rens pris for kr. og konverter til numeric
+boligsiden_clean$pris <- gsub("kr\\.\\s*|\\.", "", boligsiden_clean$pris)
+boligsiden_clean$pris <- as.numeric(boligsiden_clean$pris)
+str(boligsiden_clean)
+
+
+## Plot
+ggplot(data = boligsiden_clean)+
+  geom_point(mapping = aes(x = størrelse, y = pris))+
+  geom_smooth(mapping = aes(x = størrelse, y = pris))+
+  theme_minimal()
+
+
