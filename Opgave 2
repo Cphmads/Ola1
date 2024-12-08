@@ -1,0 +1,110 @@
+library(corrplot)
+library(tidyverse)
+
+##### Ola 1 #####
+
+#### opgave 2.1 ####
+
+#### opgave 2.1 ####
+boligsiden <- read.csv("boligsiden.csv")
+boligdf_clean2 <- na.omit(boligsiden)
+typeof(boligdf_clean2$pris)
+
+#Sortering af NA-værdier fra variabler størrelse, kvmpris, mdudg, grund, værelser og opført 
+#boligdf_clean2 <- boligdf_clean %>% drop_na(størrelse,kvmpris, mdudg, grund, værelser, opført)
+
+boligdf_clean2$kvmpris <- gsub("\\.", "", boligdf_clean2$kvmpris)  # Fjern alle punktummer
+boligdf_clean2$mdudg <- gsub("\\.", "", boligdf_clean2$mdudg)  # Fjern alle punktummer
+boligdf_clean2$liggetid <- gsub("dag", "", boligdf_clean2$liggetid) # Fjern dag bagefter liggetid
+boligdf_clean2$pris <- gsub("kr", "", boligdf_clean2$pris)  # Fjern 'kr'
+boligdf_clean2$pris <- gsub("\\.", "", boligdf_clean2$pris) # Fjern punktummer (valgfrit)
+
+#Gør kvmpris, pris, opført, størrelse, mdudg og opført numerisk 
+boligdf_clean2$kvmpris <- as.numeric(boligdf_clean2$kvmpris)
+boligdf_clean2$pris <- as.numeric(boligdf_clean2$pris)
+boligdf_clean2$mdudg <- as.numeric(boligdf_clean2$mdudg)
+
+
+# Kontrollering af NA-værdier 
+print(anyNA(boligdf_clean2$kvmpris))
+print(anyNA(boligdf_clean2$størrelse))
+print(anyNA(boligdf_clean2$mdudg))
+print(anyNA(boligdf_clean2$grund))
+print(anyNA(boligdf_clean2$værelser))
+print(anyNA(boligdf_clean2$opført))
+
+#For at tjekke strukturen 
+str(boligdf_clean2)
+
+#####Fem regressionsmodeller 
+
+# Regression 1: Kvmpris vs Størrelse
+model_størrelse <- lm(kvmpris ~ størrelse, data=boligdf_clean2)
+summary(model_størrelse)
+
+# Regression 2: Kvmpris vs Mdudg (månedlige udgifter)
+model_mdudg <- lm(kvmpris ~ mdudg, data=boligdf_clean2)
+summary(model_mdudg)
+
+# Regression 3: Kvmpris vs Grund
+model_grund <- lm(kvmpris ~ grund, data=boligdf_clean2)
+summary(model_grund)
+
+# Regression 4: Kvmpris vs Værelser
+model_værelser <- lm(kvmpris ~ værelser, data=boligdf_clean2)
+summary(model_værelser)
+
+# Regression 5: Kvmpris vs Opført
+model_opført <- lm(kvmpris ~ opført, data=boligdf_clean2)
+summary(model_opført)
+str(boligdf_clean2)
+
+# Scatterplots med regressionslinje
+par(mfrow=c(2,3))
+
+plot(boligdf_clean2$størrelse, boligdf_clean2$kvmpris, main="Kvmpris vs Størrelse", xlab="Størrelse kvm", ylab="Kvmpris kr.", ylim = c(0,200000))
+
+
+plot(boligdf_clean2$mdudg, boligdf_clean2$kvmpris, main="Kvmpris vs Mdudg", xlab="Mdudg kr.", ylab="Kvmpris kr.", ylim = c(0,200000))
+
+
+plot(boligdf_clean2$grund, boligdf_clean2$kvmpris, main="Kvmpris vs Grund", xlab="Grund kvm", ylab="Kvmpris kr.",ylim = c(0,200000))
+
+
+plot(boligdf_clean2$værelser, boligdf_clean2$kvmpris, main="Kvmpris vs Værelser", xlab="Værelser", ylab="Kvmpris kr.",ylim = c(0,200000))
+
+
+plot(boligdf_clean2$opført, boligdf_clean2$kvmpris, main="Kvmpris vs Opført", xlab="Opført år", ylab="Kvmpris kr.", ylim = c(0,200000), xlim = c(1550, 2024))
+
+
+###Korrelationsmatrix
+
+# Vælg de relevante variable
+variabler <- boligdf_clean2 %>% select(størrelse, mdudg, grund, værelser, opført)
+
+# Beregn korrelationsmatrix
+korrelationsmatrix <- cor(variabler, use = "complete.obs")
+
+# Justér margenerne først
+par(mar = c(5, 5, 8, 5))  # Mere plads til titlen
+
+# Plot korrelationsmatrix
+corrplot(korrelationsmatrix, method = "circle", type = "upper", 
+         addCoef.col = "black",             # Tilføjer korrelationstal
+         number.cex = 0.7,                  # Størrelse på korrelationstal
+         tl.col = "black", tl.srt = 40,     # Farve og rotation af etiketter
+         title = "Korrelationsmatrix for udvalgte variabler", 
+         mar = c(0, 0, 4, 0))               # Juster margenerne for plottet (4 enheder til toppen)
+
+# Tilføj en undertitel
+mtext("Kilde: boligsiden.dk ", side = 3, line = 1, cex = 1)
+
+
+
+
+
+
+
+
+
+
