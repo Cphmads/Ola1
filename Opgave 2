@@ -4,8 +4,6 @@ library(tidyverse)
 ##### Ola 1 #####
 
 #### opgave 2.1 ####
-
-#### opgave 2.1 ####
 boligsiden <- read.csv("boligsiden.csv")
 boligdf_clean2 <- na.omit(boligsiden)
 typeof(boligdf_clean2$pris)
@@ -33,8 +31,21 @@ print(anyNA(boligdf_clean2$grund))
 print(anyNA(boligdf_clean2$værelser))
 print(anyNA(boligdf_clean2$opført))
 
+# Fjern rækker med priser på 50 millioner eller 45 millioner
+boligdf_clean2 <- boligdf_clean2[boligdf_clean2$pris < 45000000, ]
+
+# Tjek ændringerne
+head(boligdf_clean2)
+
 #For at tjekke strukturen 
 str(boligdf_clean2)
+
+# Beregn korrelation mellem 'pris' og 'størrelse'
+correlation <- cor(boligdf_clean2$pris, boligdf_clean2$størrelse, use = "complete.obs")
+
+# Print resultatet
+print(correlation)
+
 
 #####Fem regressionsmodeller 
 
